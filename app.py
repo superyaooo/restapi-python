@@ -59,4 +59,38 @@ def get_book_by_isbn(isbn):
             }
     return jsonify(return_value)
 
+# PUT requires an entire entity
+@app.route('/books/<int:isbn>', methods=['PUT'])
+def replace_book(isbn):
+    request_data = request.get_json()
+    new_book = {
+        'name': request_data['name'],
+        'price': request_data['price'],
+        'isbn': isbn
+    }
+    counter = 0;
+    for book in books:
+        currentIsbn = book['isbn']
+        if currentIsbn == isbn:
+            books[counter] = new_book
+        counter += 1
+    response = Response("", 204)
+    return response
+
+# PATCH does not require an entire entity
+@app.route('/books/<int:isbn>', methods=['PATCH'])
+def update_book(isbn):
+    request_data = request.get_json()
+    updated_book = {}
+    if("name" in request_data):
+        updated_book['name'] = request_data['name']
+    if("price" in request_data):
+        updated_book['price'] = request_data['price']
+    for book in books:
+        if book['isbn'] == isbn:
+            book.update(updated_book)
+    response = Response("", 204)
+    response.headers['Location'] = "/books" + str(isbn)
+    return response
+
 app.run(port=5000)
