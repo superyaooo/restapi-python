@@ -93,4 +93,16 @@ def update_book(isbn):
     response.headers['Location'] = "/books" + str(isbn)
     return response
 
+@app.route('/books/<int:isbn>', methods=['DELETE'])
+def delete_book(isbn):
+    request_data = request.get_json()
+    # i = 0
+    for book in books:
+        if book['isbn'] == isbn:
+            # books.pop(i)
+            books.remove(book)
+            return Response("", 204)
+        # i += 1
+    return Response("", 404, mimetype='application/json')
+
 app.run(port=5000)
